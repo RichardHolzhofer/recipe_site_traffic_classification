@@ -10,4 +10,6 @@ xgboost
 catboost
 pyarrow
 joblib
+dvc
+mlflow
 #-e .
