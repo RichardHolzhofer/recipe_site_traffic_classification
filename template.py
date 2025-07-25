@@ -7,7 +7,7 @@ logging.basicConfig(
     format="[%(asctime)s: %(message)s]"
 )
 
-project_name = 'recipetraffic'
+project_name = 'recipesitetraffic'
 
 list_of_files = [
     "notebooks/1_EDA.ipynb",
