@@ -12,4 +12,8 @@ pyarrow
 joblib
 dvc
 mlflow
+python-dotenv
+pymongo
+certifi
+boto3
 #-e .
