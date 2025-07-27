@@ -1,7 +1,7 @@
 .venv/
 __pycache__
 .env
-data/
 notebooks/catboost_info
-notebooks/models
 logs/
+artifacts/
+mlruns/
