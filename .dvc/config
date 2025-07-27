@@ -1,0 +1,3 @@
+['remote "origin"']
+    url = s3://dvc
+    endpointurl = https://dagshub.com/RichardHolzhofer/recipe_site_traffic_classification.s3

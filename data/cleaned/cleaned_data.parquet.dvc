@@ -1,0 +1,5 @@
+outs:
+- md5: 8a5ff853291ec0c68642a78a25ded49e
+  size: 25505
+  hash: md5
+  path: cleaned_data.parquet
