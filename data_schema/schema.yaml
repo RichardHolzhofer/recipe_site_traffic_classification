@@ -1,0 +1,9 @@
+columns:
+  recipe: int64
+  calories: float64
+  carbohydrate: float64
+  sugar: float64
+  protein: float64
+  category: object
+  servings: object
+  high_traffic: object

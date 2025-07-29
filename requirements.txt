@@ -18,4 +18,6 @@ python-dotenv
 pymongo
 certifi
 boto3
+great_expectations
+pyaml
 #-e .

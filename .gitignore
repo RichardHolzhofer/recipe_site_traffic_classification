@@ -5,3 +5,4 @@ notebooks/catboost_info
 logs/
 artifacts/
 mlruns/
+helper.ipynb
