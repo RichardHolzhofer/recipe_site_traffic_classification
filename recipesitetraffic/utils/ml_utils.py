@@ -6,14 +6,15 @@ from recipesitetraffic.utils.main_utils import read_yaml_file
 from recipesitetraffic.constants.constants import SCHEMA_FILE_PATH
 import yaml
 import great_expectations as gx
-from great_expectations.core.expectation_suite import ExpectationSuite
 
 
 
 
-def add_expectations(suite: ExpectationSuite, target_col: str, col_num: int, min_row: int, max_row: int):
+def add_expectations(suite_name: str, target_col: str, col_num: int, min_row: int, max_row: int):
     try:
         logging.info("Reading in data schema")
+        context = gx.get_context()
+        suite = context.suites.add(gx.ExpectationSuite(name=suite_name))
         
         schema = read_yaml_file(SCHEMA_FILE_PATH)['columns']
             
