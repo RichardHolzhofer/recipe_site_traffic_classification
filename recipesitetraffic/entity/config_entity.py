@@ -74,4 +74,9 @@ class DataValidationConfig:
             constants.DATA_VALIDATION_DRIFT_REPORT_DIR,
             constants.DATA_VALIDATION_DRIFT_REPORT_FILE_NAME
             )
+        self.schema_report_file_path = os.path.join(
+            self.data_validation_dir,
+            constants.DATA_VALIDATION_SCHEMA_REPORT_DIR,
+            constants.DATA_VALIDATION_SCHEMA_REPORT_FILE_NAME
+        )
         

@@ -20,4 +20,5 @@ certifi
 boto3
 great_expectations
 pyaml
+evidently
 #-e .

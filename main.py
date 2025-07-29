@@ -1,5 +1,6 @@
 import os
 import sys
+import warnings
 from recipesitetraffic.exception.exception import RecipeSiteTrafficException
 from recipesitetraffic.logging.logger import logging
 from recipesitetraffic.components.data_ingestion import DataIngestion
@@ -7,7 +8,7 @@ from recipesitetraffic.components.data_validation import DataValidation
 from recipesitetraffic.entity.config_entity import TrainingPipelineConfig, DataIngestionConfig, DataValidationConfig
 
 
-
+warnings.filterwarnings('ignore')
 
 if __name__ == "__main__":
     try:
@@ -19,7 +20,8 @@ if __name__ == "__main__":
         
         data_validation_config = DataValidationConfig(training_pipeline_config=training_pipeline_config)
         data_validation = DataValidation(data_ingestion_artifact,data_validation_config)
-        data_validation.initiate_data_validation()
+        data_validation_artifact = data_validation.initiate_data_validation()
+        print(data_validation_artifact)
         
         
     except Exception as e:

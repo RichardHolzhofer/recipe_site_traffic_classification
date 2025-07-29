@@ -6,3 +6,4 @@ logs/
 artifacts/
 mlruns/
 helper.ipynb
+evidently.ipynb
