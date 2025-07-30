@@ -8,7 +8,6 @@ from recipesitetraffic.entity.artifact_entity import DataValidationArtifact, Dat
 from recipesitetraffic.utils.main_utils import read_csv_file, save_numpy_array, save_object
 from recipesitetraffic.constants.constants import TARGET_COLUMN
 
-from sklearn.model_selection import train_test_split, StratifiedKFold, GridSearchCV
 from sklearn.preprocessing import PowerTransformer, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
@@ -18,7 +17,7 @@ from imblearn.pipeline import Pipeline as ImbPipeline
 
 import pandas as pd
 import numpy as np
-import joblib
+from typing import Tuple
 
 class DataTransformation:
     def __init__(self, data_validation_artifact: DataValidationArtifact, data_transformation_config: DataTransformationConfig):
@@ -28,7 +27,7 @@ class DataTransformation:
         except Exception as e:
             raise RecipeSiteTrafficException(e, sys)
         
-    def create_preprocessor_object(self, train_df):
+    def create_preprocessor_object(self, train_df: pd.DataFrame) -> Tuple[ImbPipeline, ImbPipeline]:
         try:
             
             logging.info("Creating preprocessor objects")
