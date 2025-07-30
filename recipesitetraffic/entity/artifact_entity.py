@@ -17,8 +17,10 @@ class DataValidationArtifact:
     
 @dataclass
 class DataTransformationArtifact:
-    preprocessor_object_file_path: str
-    preprocessed_train_file_path: str
+    preprocessor_object_normal_file_path: str
+    preprocessor_object_upsampler_file_path: str
+    preprocessed_train_normal_file_path: str
+    preprocessed_train_upsampled_file_path: str
     preprocessed_test_file_path: str
     
 
