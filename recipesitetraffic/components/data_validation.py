@@ -8,6 +8,7 @@ from recipesitetraffic.entity.artifact_entity import DataIngestionArtifact, Data
 from recipesitetraffic.constants.constants import SCHEMA_FILE_PATH
 from recipesitetraffic.utils.main_utils import read_yaml_file, read_csv_file, save_json
 from recipesitetraffic.utils.ml_utils import clean_for_drift_detection
+from recipesitetraffic.constants.constants import TARGET_COLUMN
 
 import great_expectations as gx
 import pandas as pd
@@ -29,7 +30,7 @@ class DataValidation:
             raise RecipeSiteTrafficException(e, sys)
         
         
-    def run_data_schema_validation(self, dataframe, target_col, col_num, min_row, max_row):
+    def run_data_schema_validation(self, dataframe: pd.DataFrame, target_col: str, col_num: int, min_row: int, max_row: int) -> bool:
         
         try:
             logging.info("Data schema check started")
@@ -78,8 +79,9 @@ class DataValidation:
         
         except Exception as e:
             raise RecipeSiteTrafficException(e, sys)
+        
     
-    def run_data_drift_validation(self, train_df, test_df):
+    def run_data_drift_validation(self, train_df: pd.DataFrame, test_df: pd.DataFrame) -> bool:
         
         try:
             logging.info("Data drift check started")
@@ -115,6 +117,7 @@ class DataValidation:
             return result_success
         except Exception as e:
             raise RecipeSiteTrafficException(e, sys)
+        
     
     def determine_validation_status(self, train_schema_result, test_schema_result, drift_result):
         try:
@@ -123,22 +126,54 @@ class DataValidation:
             raise RecipeSiteTrafficException(e, sys)
         
         
-        
-    
     def initiate_data_validation(self) -> DataValidationArtifact:
         try:
+            logging.info("Data validation has started")
             train_file_path = self.data_ingestion_artifact.train_file_path
             test_file_path = self.data_ingestion_artifact.test_file_path
             
+            logging.info("Reading in files for data validation")
             train_df = read_csv_file(train_file_path)
             test_df = read_csv_file(test_file_path)
             
-            train_schema_result = self.run_data_schema_validation(train_df, 'high_traffic', 8, min_row=500, max_row=900)
-            test_schema_result = self.run_data_schema_validation(test_df, 'high_traffic', 8, min_row=100, max_row=400)
+            logging.info("Schema check on training dataset has started")
+            train_schema_result = self.run_data_schema_validation(
+                dataframe=train_df,
+                target_col=TARGET_COLUMN,
+                col_num=8,
+                min_row=500,
+                max_row=900
+                )
             
-            drift_result = self.run_data_drift_validation(train_df, test_df)
+            logging.info("Schema check on test dataset has started")
+            test_schema_result = self.run_data_schema_validation(
+                dataframe=test_df,
+                target_col=TARGET_COLUMN,
+                col_num=8,
+                min_row=100,
+                max_row=400
+                )
             
-            status = self.determine_validation_status(train_schema_result, test_schema_result, drift_result)
+            logging.info("Data drift check started")
+            drift_result = self.run_data_drift_validation(
+                train_df=train_df,
+                test_df=test_df
+                )
+            
+            status = self.determine_validation_status(
+                train_schema_result=train_schema_result,
+                test_schema_result=test_schema_result,
+                drift_result=drift_result
+                )
+            
+            if status == True:
+                logging.info("Validation has been completed, schema is OK, no data drift detected")
+            else:
+                logging.warning("Validation has been completed, schema and/or data drift detected")
+            
+            # Due to the small size of the test set data drift is present,
+            # therefore logic to save files to invalid data folder based on status is not implemented
+            
             
             os.makedirs(self.data_validation_config.valid_data_dir, exist_ok=True)
             train_df.to_csv(self.data_validation_config.valid_train_file_path, index=False, header=True)

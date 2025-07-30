@@ -80,3 +80,4 @@ class DataValidationConfig:
             constants.DATA_VALIDATION_SCHEMA_REPORT_FILE_NAME
         )
         
+    
