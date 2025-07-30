@@ -30,6 +30,8 @@ class DataTransformation:
         
     def create_preprocessor_object(self, train_df):
         try:
+            
+            logging.info("Creating preprocessor objects")
             cat_features = train_df.select_dtypes(include='object').columns.tolist()
             num_features = train_df.select_dtypes(include='number').columns.tolist()
             num_features.remove(TARGET_COLUMN)
@@ -42,6 +44,8 @@ class DataTransformation:
             smote_pipe = ImbPipeline(steps=[("ct", ct), ('smote', SMOTE(random_state=42))])
             tree_pipe = Pipeline(steps=[("ct", ct)])
             
+            logging.info("Preprocessor with and without upsampling is created")
+            
             return smote_pipe, tree_pipe
         
         except Exception as e:
@@ -51,6 +55,8 @@ class DataTransformation:
         
     def clean_dataset(self, df: pd.DataFrame) -> pd.DataFrame:
         try:
+            
+            logging.info("Cleaning dataset has started")
 
             df.drop('recipe', axis=1, inplace=True)
             df.loc[df['category']=='Chicken Breast', 'category'] = 'Chicken'
@@ -66,6 +72,8 @@ class DataTransformation:
                 df.dropna(inplace=True)
                 df.reset_index(drop=True, inplace=True)
                 
+            logging.info("Dataset has been cleaned")
+                
             return df
             
         except Exception as e:
@@ -74,6 +82,7 @@ class DataTransformation:
     def initiate_data_transformation(self) -> DataTransformationArtifact:
         try:
             
+            logging.info("Data transformation has started")
             train_df = read_csv_file(self.data_validation_artifact.valid_train_file_path)
             test_df = read_csv_file(self.data_validation_artifact.valid_test_file_path)
             
@@ -82,34 +91,46 @@ class DataTransformation:
             
             smote_pipe, tree_pipe = self.create_preprocessor_object(cleaned_train_df)
             
+            logging.info("Splitting datasets into predictors and target feature")
+            
             input_features_train_df = cleaned_train_df.drop(columns=[TARGET_COLUMN], axis=1)
             target_feature_train_df = cleaned_train_df[TARGET_COLUMN]
             
             input_features_test_df = cleaned_test_df.drop(columns=[TARGET_COLUMN], axis=1)
             target_feature_test_df = cleaned_test_df[TARGET_COLUMN]
             
+            logging.info("Transforming train dataset without upsampling")
             transformed_train_df_features_normal = tree_pipe.fit_transform(input_features_train_df)
+            
+            logging.info("Transforming train dataset with upsampling")
             transformed_train_df_features_upsampled, transformed_train_df_target_feature_upsampled = smote_pipe.fit_resample(input_features_train_df, target_feature_train_df)
             
+            logging.info("Transforming test dataset without upsampling")
             transformed_test_df_features = tree_pipe.transform(input_features_test_df)
             
+            logging.info("Concatenating numpy array along Y axis")
             train_arr_normal = np.c_[transformed_train_df_features_normal, np.array(target_feature_train_df)]
             train_arr_upsampled = np.c_[transformed_train_df_features_upsampled, np.array(transformed_train_df_target_feature_upsampled)]
             
             test_arr = np.c_[transformed_test_df_features, np.array(target_feature_test_df)]
             
+            logging.info("Setting up directories for preprocessed data artifacts")
             os.makedirs(self.data_transformation_config.data_transformation_dir, exist_ok=True)
             os.makedirs(self.data_transformation_config.preprocessed_data_dir, exist_ok=True)
             
+            logging.info("Saving transformed datasets")
             save_numpy_array(train_arr_normal, self.data_transformation_config.preprocessed_train_normal_file_path)
             save_numpy_array(train_arr_upsampled, self.data_transformation_config.preprocessed_train_upsampled_file_path)
             save_numpy_array(test_arr, self.data_transformation_config.preprocessed_test_file_path)
             
+            logging.info("Setting up directories for data preprocessor artifacts")
             os.makedirs(self.data_transformation_config.preprocessor_object_dir, exist_ok=True)
             
+            logging.info("Saving transformed preprocessors")
             save_object(tree_pipe, self.data_transformation_config.preprocessor_object_normal_file_path)
             save_object(smote_pipe, self.data_transformation_config.preprocessor_object_upsampler_file_path)
             
+            logging.info("Data transformation has been completed successfully")
             return DataTransformationArtifact(
                 preprocessor_object_normal_file_path=self.data_transformation_config.preprocessor_object_normal_file_path,
                 preprocessor_object_upsampler_file_path=self.data_transformation_config.preprocessor_object_upsampler_file_path,
