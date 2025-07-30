@@ -80,4 +80,24 @@ class DataValidationConfig:
             constants.DATA_VALIDATION_SCHEMA_REPORT_FILE_NAME
         )
         
-    
+class DataTransformationConfig:
+    def __init__(self, training_pipeline_config: TrainingPipelineConfig):
+        self.data_transformation_dir = os.path.join(
+            training_pipeline_config.artifact_dir,
+            constants.DATA_TRANSFORMATION_DIR_NAME
+        )
+        self.preprocessed_train_file_path = os.path.join(
+            self.data_transformation_dir,
+            constants.DATA_TRANSFORMATION_PREPROCESSED_DATA_DIR,
+            constants.TRAIN_FILE_NAME
+        )
+        self.preprocessed_test_file_path = os.path.join(
+            self.data_transformation_dir,
+            constants.DATA_TRANSFORMATION_PREPROCESSED_DATA_DIR,
+            constants.TEST_FILE_NAME
+        )
+        self.preprocessor_object_file_path = os.path.join(
+            self.data_transformation_dir,
+            constants.DATA_TRANSFORMATION_PREPROCESSOR_OBJECT_DIR,
+            constants.DATA_TRANSFORMATION_PREPROCESSOR_OBJECT_FILE_NAME
+        )

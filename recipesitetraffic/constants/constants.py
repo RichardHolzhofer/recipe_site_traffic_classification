@@ -38,3 +38,13 @@ DATA_VALIDATION_DRIFT_REPORT_DIR: str = "drift_report"
 DATA_VALIDATION_DRIFT_REPORT_FILE_NAME: str = "drift_report.json"
 DATA_VALIDATION_SCHEMA_REPORT_DIR: str = "schema_report"
 DATA_VALIDATION_SCHEMA_REPORT_FILE_NAME: str = "schema_report.json"
+
+
+"""
+Data transformation related constants start with DATA_TRANSFORMATION var name
+"""
+
+DATA_TRANSFORMATION_DIR_NAME: str = "data_transformation"
+DATA_TRANSFORMATION_PREPROCESSED_DATA_DIR: str = "preprocessed_data"
+DATA_TRANSFORMATION_PREPROCESSOR_OBJECT_DIR: str = "preprocessor_object"
+DATA_TRANSFORMATION_PREPROCESSOR_OBJECT_FILE_NAME: str = "preprocessor.joblib"
