@@ -39,6 +39,7 @@ list_of_files = [
     f"{project_name}/utils/main_utils.py",
     f"{project_name}/utils/ml_utils.py",
     "data/.gitkeep",
+    "data_schema/schema.yaml",
     ".github/workflows/.gitkeep",
     ".gitignore",
     ".env",
