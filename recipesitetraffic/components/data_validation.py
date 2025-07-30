@@ -3,7 +3,7 @@ import sys
 
 from recipesitetraffic.exception.exception import RecipeSiteTrafficException
 from recipesitetraffic.logging.logger import logging
-from recipesitetraffic.entity.config_entity import TrainingPipelineConfig, DataValidationConfig
+from recipesitetraffic.entity.config_entity import DataValidationConfig
 from recipesitetraffic.entity.artifact_entity import DataIngestionArtifact, DataValidationArtifact
 from recipesitetraffic.constants.constants import SCHEMA_FILE_PATH
 from recipesitetraffic.utils.main_utils import read_yaml_file, read_csv_file, save_json
@@ -12,9 +12,7 @@ from recipesitetraffic.constants.constants import TARGET_COLUMN
 
 import great_expectations as gx
 import pandas as pd
-from evidently import Dataset
-from evidently import DataDefinition
-from evidently import Report
+from evidently import Dataset, DataDefinition, Report
 from evidently.presets import DataDriftPreset
 
 

@@ -7,6 +7,8 @@ from recipesitetraffic.logging.logger import logging
 import yaml
 import json
 import pandas as pd
+import numpy as np
+import joblib
 
 
 def read_yaml_file(file_path: str):
@@ -33,5 +35,19 @@ def save_json(obj: object, file_path: str):
     try:
         with open(file_path, "w") as f:
             json.dump(obj, f)
+    except Exception as e:
+        raise RecipeSiteTrafficException(e, sys)
+    
+def save_object(obj: object, file_path: str):
+    try:
+        joblib.dump(obj, file_path)
+    except Exception as e:
+        raise RecipeSiteTrafficException(e, sys)
+    
+def save_numpy_array(array: np.array, file_path: str):
+    try:
+        with open(file_path, "wb") as f:
+            np.save(f, array)
+            
     except Exception as e:
         raise RecipeSiteTrafficException(e, sys)

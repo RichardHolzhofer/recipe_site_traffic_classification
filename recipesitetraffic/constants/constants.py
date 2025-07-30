@@ -38,3 +38,17 @@ DATA_VALIDATION_DRIFT_REPORT_DIR: str = "drift_report"
 DATA_VALIDATION_DRIFT_REPORT_FILE_NAME: str = "drift_report.json"
 DATA_VALIDATION_SCHEMA_REPORT_DIR: str = "schema_report"
 DATA_VALIDATION_SCHEMA_REPORT_FILE_NAME: str = "schema_report.json"
+
+
+"""
+Data transformation related constants start with DATA_TRANSFORMATION var name
+"""
+
+DATA_TRANSFORMATION_DIR_NAME: str = "data_transformation"
+DATA_TRANSFORMATION_PREPROCESSED_DATA_DIR: str = "preprocessed_data"
+DATA_TRANSFORMATION_PREPROCESSED_TRAIN_NORMAL_FILE_NAME: str = "preprocessed_train_normal.npy"
+DATA_TRANSFORMATION_PREPROCESSED_TRAIN_UPSAMPLED_FILE_NAME: str = "preprocessed_train_upsampled.npy"
+DATA_TRANSFORMATION_PREPROCESSED_TEST_FILE_NAME: str = "preprocessed_test.npy"
+DATA_TRANSFORMATION_PREPROCESSOR_OBJECT_DIR: str = "preprocessor_object"
+DATA_TRANSFORMATION_PREPROCESSOR_OBJECT_NORMAL_FILE_NAME: str = "normal_preprocessor.joblib"
+DATA_TRANSFORMATION_PREPROCESSOR_OBJECT_UPSAMPLER_FILE_NAME: str = "upsampler_preprocessor.joblib"
