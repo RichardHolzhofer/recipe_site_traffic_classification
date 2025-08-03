@@ -61,9 +61,6 @@ class DataTransformation:
             df.loc[df['category']=='Chicken Breast', 'category'] = 'Chicken'
             df['servings'] = df['servings'].str.strip(' as a snack')
             
-            traffic_dict = {'High':1, np.nan:0}
-            df['high_traffic'] = df['high_traffic'].map(traffic_dict)
-            
             df.drop(df[(df.isna().sum(axis=1) >= 4)].index, inplace=True)
             df.reset_index(drop=True, inplace=True)
 
@@ -87,6 +84,7 @@ class DataTransformation:
             
             cleaned_train_df = self.clean_dataset(train_df)
             cleaned_test_df = self.clean_dataset(test_df)
+
             
             smote_pipe, tree_pipe = self.create_preprocessor_object(cleaned_train_df)
             

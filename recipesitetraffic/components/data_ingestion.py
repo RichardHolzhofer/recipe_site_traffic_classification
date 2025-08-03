@@ -5,6 +5,7 @@ from recipesitetraffic.exception.exception import RecipeSiteTrafficException
 from recipesitetraffic.logging.logger import logging
 from recipesitetraffic.entity.config_entity import DataIngestionConfig
 from recipesitetraffic.entity.artifact_entity import DataIngestionArtifact
+from recipesitetraffic.constants.constants import TARGET_COLUMN
 
 import numpy as np
 import pandas as pd
@@ -43,6 +44,9 @@ class DataIngestion:
         except Exception as e:
             raise RecipeSiteTrafficException(e, sys)
         
+        finally:
+            self.mongo_client.close()
+        
     def export_data_to_feature_store(self, df: pd.DataFrame):
         try:
             logging.info("Exporting data to feature store")
@@ -61,7 +65,14 @@ class DataIngestion:
     def split_data_into_train_and_test(self, df: pd.DataFrame):
         try:
             logging.info("Splitting data into train and test sets")
-            train_df, test_df = train_test_split(df, test_size=self.data_ingestion_config.train_test_split_ratio, random_state=42)
+            df['high_traffic'] = df['high_traffic'].apply(lambda x: 1 if x == 'High' else 0)
+            train_df, test_df = train_test_split(
+                df,
+                test_size=self.data_ingestion_config.train_test_split_ratio,
+                random_state=42,
+                stratify=df[TARGET_COLUMN],
+                shuffle=True
+                )
             dir_path = os.path.dirname(self.data_ingestion_config.training_file_path)
             os.makedirs(dir_path, exist_ok=True)
             train_df.to_csv(self.data_ingestion_config.training_file_path, index=False, header=True)
