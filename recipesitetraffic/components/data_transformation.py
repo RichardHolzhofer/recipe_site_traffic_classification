@@ -116,7 +116,7 @@ class DataTransformation:
             os.makedirs(self.data_transformation_config.preprocessed_data_dir, exist_ok=True)
             
             logging.info("Saving transformed datasets")
-            save_numpy_array(train_arr_normal, self.data_transformation_config.preprocessed_train_normal_file_path)
+            save_numpy_array(train_arr_normal, self.data_transformation_config.preprocessed_train_basic_file_path)
             save_numpy_array(train_arr_upsampled, self.data_transformation_config.preprocessed_train_upsampled_file_path)
             save_numpy_array(test_arr, self.data_transformation_config.preprocessed_test_file_path)
             
@@ -124,14 +124,14 @@ class DataTransformation:
             os.makedirs(self.data_transformation_config.preprocessor_object_dir, exist_ok=True)
             
             logging.info("Saving transformed preprocessors")
-            save_object(tree_pipe, self.data_transformation_config.preprocessor_object_normal_file_path)
+            save_object(tree_pipe, self.data_transformation_config.preprocessor_object_basic_file_path)
             save_object(smote_pipe, self.data_transformation_config.preprocessor_object_upsampler_file_path)
             
             logging.info("Data transformation has been completed successfully")
             return DataTransformationArtifact(
-                preprocessor_object_normal_file_path=self.data_transformation_config.preprocessor_object_normal_file_path,
+                preprocessor_object_basic_file_path=self.data_transformation_config.preprocessor_object_basic_file_path,
                 preprocessor_object_upsampler_file_path=self.data_transformation_config.preprocessor_object_upsampler_file_path,
-                preprocessed_train_normal_file_path= self.data_transformation_config.preprocessed_train_normal_file_path,
+                preprocessed_train_basic_file_path= self.data_transformation_config.preprocessed_train_basic_file_path,
                 preprocessed_train_upsampled_file_path=self.data_transformation_config.preprocessed_train_upsampled_file_path,
                 preprocessed_test_file_path=self.data_transformation_config.preprocessed_test_file_path
                 )

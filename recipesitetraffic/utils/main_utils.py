@@ -11,6 +11,7 @@ import numpy as np
 import joblib
 
 
+
 def read_yaml_file(file_path: str):
     try:
         logging.info("Reading in yaml file")
@@ -28,6 +29,19 @@ def read_csv_file(file_path: str):
         
         df = pd.read_csv(file_path)
         return df
+    except Exception as e:
+        raise RecipeSiteTrafficException(e, sys)
+    
+def read_numpy_array(file_path: str):
+    try:
+        with open(file_path, "rb") as f:
+             return np.load(f)
+    except Exception as e:
+        raise RecipeSiteTrafficException(e, sys)
+    
+def read_object(file_path: str):
+    try:
+        return joblib.load(file_path)
     except Exception as e:
         raise RecipeSiteTrafficException(e, sys)
     

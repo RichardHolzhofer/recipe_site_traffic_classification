@@ -6,7 +6,8 @@ from recipesitetraffic.logging.logger import logging
 from recipesitetraffic.components.data_ingestion import DataIngestion
 from recipesitetraffic.components.data_validation import DataValidation
 from recipesitetraffic.components.data_transformation import DataTransformation
-from recipesitetraffic.entity.config_entity import TrainingPipelineConfig, DataIngestionConfig, DataValidationConfig, DataTransformationConfig
+from recipesitetraffic.components.model_trainer import ModelTrainer
+from recipesitetraffic.entity.config_entity import TrainingPipelineConfig, DataIngestionConfig, DataValidationConfig, DataTransformationConfig, ModelTrainerConfig
 
 
 warnings.filterwarnings('ignore')
@@ -30,6 +31,16 @@ if __name__ == "__main__":
         
         print(data_transformation_artifact)
         
+        model_trainer_config = ModelTrainerConfig(training_pipeline_config=training_pipeline_config)
+        model_trainer = ModelTrainer(
+            data_validation_artifact=data_validation_artifact,
+            data_transformation_artifact=data_transformation_artifact,
+            model_trainer_config=model_trainer_config
+        )
+        
+        model_trainer_artifact = model_trainer.initiate_model_training()
+        
+        print(model_trainer_artifact)
         
     except Exception as e:
         raise RecipeSiteTrafficException(e, sys)
