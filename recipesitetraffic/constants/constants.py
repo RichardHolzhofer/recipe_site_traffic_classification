@@ -66,3 +66,8 @@ MODEL_TRAINER_TRAINED_MODEL_FILE_NAME: str = "model.joblib"
 MODEL_TRAINER_TEST_RESULTS_DIR: str = "test_results"
 MODEL_TRAINER_TEST_RESULTS_FILE_NAME: str = "results.csv"
 MODEL_TRAINER_EXPECTED_SCORE: float = 0.8
+
+"""
+Training pipeline related constants start with TRAINING_PIPELINE var name
+"""
+TRAINING_PIPELINE_ARTIFACT_BUCKET_NAME = "recipe-site-traffic-classification"
