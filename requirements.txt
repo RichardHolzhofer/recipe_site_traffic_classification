@@ -21,4 +21,6 @@ boto3
 great_expectations
 pyaml
 evidently
+fastapi
+uvicorn
 #-e .
