@@ -16,6 +16,8 @@ TEST_FILE_NAME: str = "test.csv"
 
 SCHEMA_FILE_PATH = os.path.join("data_schema", "schema.yaml")
 
+FINAL_MODEL_FILE_PATH = os.path.join("final_model", "final_model_with_preprocessor.joblib")
+
 """
 Data ingestion related constants start with DATA_INGESTION var name
 """

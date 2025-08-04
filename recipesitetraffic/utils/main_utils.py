@@ -11,7 +11,6 @@ import numpy as np
 import joblib
 
 
-
 def read_yaml_file(file_path: str):
     try:
         logging.info("Reading in yaml file")
@@ -65,3 +64,4 @@ def save_numpy_array(array: np.array, file_path: str):
             
     except Exception as e:
         raise RecipeSiteTrafficException(e, sys)
+    

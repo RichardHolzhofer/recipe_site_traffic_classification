@@ -6,7 +6,7 @@ from recipesitetraffic.logging.logger import logging
 
 from recipesitetraffic.entity.artifact_entity import DataTransformationArtifact, ModelTrainerArtifact, DataValidationArtifact
 from recipesitetraffic.entity.config_entity import ModelTrainerConfig
-from recipesitetraffic.constants.constants import TARGET_COLUMN
+from recipesitetraffic.constants.constants import TARGET_COLUMN, FINAL_MODEL_FILE_PATH
 
 from recipesitetraffic.utils.main_utils import read_object, read_numpy_array, save_object, read_csv_file
 from recipesitetraffic.utils.ml_utils import get_scores, hyperparameter_tuning
@@ -18,6 +18,12 @@ from sklearn.ensemble import  GradientBoostingClassifier, RandomForestClassifier
 
 
 import pandas as pd
+import mlflow
+import dagshub
+
+dagshub.init(repo_owner='RichardHolzhofer', repo_name='recipe_site_traffic_classification', mlflow=True)
+
+mlflow.set_experiment('Recipe Site Traffic')
 
 class ModelTrainer:
     def __init__(self, data_validation_artifact: DataValidationArtifact, data_transformation_artifact: DataTransformationArtifact, model_trainer_config: ModelTrainerConfig):
@@ -86,18 +92,23 @@ class ModelTrainer:
             param_list = []
             
             for model in models.items():
-                score, param = hyperparameter_tuning(
-                    X_train_basic=x_train_basic,
-                    y_train_basic=y_train_basic,
-                    X_train_upsampled=x_train_upsampled,
-                    y_train_upsampled=y_train_upsampled,
-                    X_test=x_test,
-                    y_test=y_test,
-                    model=model,
-                    params=params
-                    )
-                results.append(score)
-                param_list.append(param)
+                with mlflow.start_run(run_name=f"Training_pipeline: {model[0]}"):
+                    score, param = hyperparameter_tuning(
+                        X_train_basic=x_train_basic,
+                        y_train_basic=y_train_basic,
+                        X_train_upsampled=x_train_upsampled,
+                        y_train_upsampled=y_train_upsampled,
+                        X_test=x_test,
+                        y_test=y_test,
+                        model=model,
+                        params=params
+                        )
+                    mlflow.log_param("model_type", model[0])
+                    mlflow.log_metric("test_precision_score", score["test_precision_score"])
+                    mlflow.log_metric("test_fbeta_score", score["test_fbeta_score"])
+                    mlflow.log_params(param[model[0]])
+                    results.append(score)
+                    param_list.append(param)
                 
                 
             logging.info("Tuning for all models is finished")
@@ -174,8 +185,9 @@ class ModelTrainer:
                     preprocessor=basic_preprocessor,
                     model=best_model_with_params_loaded
                 )
+                
             
-            logging.info("Loading in validatd data for inferencing with best model")
+            logging.info("Loading in validated data for inferencing with best model")
             train_validated = read_csv_file(self.data_validation_artifact.valid_train_file_path)
             test_validated = read_csv_file(self.data_validation_artifact.valid_test_file_path)
             
@@ -194,8 +206,14 @@ class ModelTrainer:
             y_pred_test = model.predict(x_test_val)
             
             logging.info("Creating ClassificationMetricArtifacts for train and test data")
+            """
+            Artifacts may score slightly lower than `test_results` because they operate on raw (validated) data.
+            To improve consistency and deployment readiness, we may include data cleaning steps inside the preprocessing pipeline as a future improvement.
+            """
+            
             train_artifact = get_scores(y_train_val, y_pred_train)
             test_artifact = get_scores(y_test_val, y_pred_test)
+            
             
             logging.info("Creating directories for model training artifacts")
             os.makedirs(self.model_trainer_config.model_trainer_dir, exist_ok=True)
@@ -203,9 +221,20 @@ class ModelTrainer:
             os.makedirs(self.model_trainer_config.test_results_dir, exist_ok=True)
             
             
-            logging.info("Saving best model and results")
+            logging.info("Saving best model and results artifacts")
             save_object(model, self.model_trainer_config.trained_model_file_path)
             results.to_csv(self.model_trainer_config.test_results_file_path)
+            
+            logging.info("Saving best model with preprocessor")
+            save_object(model, FINAL_MODEL_FILE_PATH)
+            
+            with mlflow.start_run(run_name=f"Final model: {best_model_name}"):
+                mlflow.log_metric("train_precision_score", train_artifact.precision_score)
+                mlflow.log_metric("train_fbeta_score", train_artifact.fbeta_score)
+                mlflow.log_metric("test_precision_score", test_artifact.precision_score)
+                mlflow.log_metric("test_fbeta_score", test_artifact.fbeta_score)
+                mlflow.log_params(model.model.get_params())
+                mlflow.log_artifact(FINAL_MODEL_FILE_PATH, artifact_path="models")
             
             logging.info("Model training method finished, best model found.")
             return ModelTrainerArtifact(
