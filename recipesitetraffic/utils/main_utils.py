@@ -31,6 +31,19 @@ def read_csv_file(file_path: str):
     except Exception as e:
         raise RecipeSiteTrafficException(e, sys)
     
+def read_numpy_array(file_path: str):
+    try:
+        with open(file_path, "rb") as f:
+             return np.load(f)
+    except Exception as e:
+        raise RecipeSiteTrafficException(e, sys)
+    
+def read_object(file_path: str):
+    try:
+        return joblib.load(file_path)
+    except Exception as e:
+        raise RecipeSiteTrafficException(e, sys)
+    
 def save_json(obj: object, file_path: str):
     try:
         with open(file_path, "w") as f:
@@ -51,3 +64,4 @@ def save_numpy_array(array: np.array, file_path: str):
             
     except Exception as e:
         raise RecipeSiteTrafficException(e, sys)
+    

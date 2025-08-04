@@ -12,7 +12,7 @@ dagshub
 pyarrow
 joblib
 dvc
-dvc[s3]
+dvc-s3
 mlflow<3
 python-dotenv
 pymongo

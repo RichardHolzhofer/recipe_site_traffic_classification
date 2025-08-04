@@ -17,10 +17,19 @@ class DataValidationArtifact:
     
 @dataclass
 class DataTransformationArtifact:
-    preprocessor_object_normal_file_path: str
+    preprocessor_object_basic_file_path: str
     preprocessor_object_upsampler_file_path: str
-    preprocessed_train_normal_file_path: str
+    preprocessed_train_basic_file_path: str
     preprocessed_train_upsampled_file_path: str
     preprocessed_test_file_path: str
     
-
+@dataclass
+class ClassificationMetricArtifact:
+    precision_score: float
+    fbeta_score: float
+    
+@dataclass
+class ModelTrainerArtifact:
+    trained_model_file_path: str
+    train_metric_artifact: ClassificationMetricArtifact
+    test_metric_artifact: ClassificationMetricArtifact

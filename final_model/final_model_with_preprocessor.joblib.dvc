@@ -1,0 +1,5 @@
+outs:
+- md5: eb7b412f87a6ef9deb18d46ee955cc4a
+  size: 53546
+  hash: md5
+  path: final_model_with_preprocessor.joblib
