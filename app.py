@@ -6,15 +6,20 @@ from recipesitetraffic.logging.logger import logging
 from recipesitetraffic.pipeline.training_pipeline import TrainingPipeline
 from recipesitetraffic.utils.main_utils import read_object
 from recipesitetraffic.constants.constants import DATA_INGESTION_DATABASE_NAME, DATA_INGESTION_COLLECTION_NAME
+from recipesitetraffic.utils.preprocessor import clean_data
+from recipesitetraffic.constants.constants import FINAL_MODEL_FILE_PATH
+from recipesitetraffic.utils.estimator import RecipeSiteTrafficBasicModel, RecipeSiteTrafficUpsamplerModel
 
 import certifi
 from dotenv import load_dotenv
 import pymongo
 import pandas as pd
+from datetime import datetime
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, File, UploadFile, Request
 from fastapi.responses import Response
+from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
 from uvicorn import run as app_run
 
@@ -31,6 +36,7 @@ collection = database[DATA_INGESTION_COLLECTION_NAME]
 
 app = FastAPI()
 origins = ["*"]
+templates = Jinja2Templates(directory="./templates")
 
 app.add_middleware(
     CORSMiddleware,
@@ -56,6 +62,28 @@ async def train_route():
     except Exception as e:
         raise RecipeSiteTrafficException(e, sys)
     
+@app.post("/predict")
+async def predict_route(request: Request, file: UploadFile=File(...)):
+    try:
+        df = pd.read_csv(file.file)
+        cleaned_df = clean_data(df)
+        
+        model = read_object(FINAL_MODEL_FILE_PATH)
+        
+        y_pred = model.predict(cleaned_df)
+        
+        cleaned_df['predicted_traffic'] = y_pred
+        cleaned_df['predicted_traffic'] = cleaned_df['predicted_traffic'].map(lambda x: 'High' if x == 1 else 'Low')
+        print(cleaned_df['predicted_traffic'])
+        
+        os.makedirs("predicted_data", exist_ok=True)
+        cleaned_df.to_csv(f"predicted_data/predictions_{datetime.now().strftime('%d-%m-%Y-%H-%M-%S')}.csv", index=False)
+        table_html = cleaned_df.to_html(classes='table table-striped')
+        
+        return templates.TemplateResponse("table.html", {"request": request, "table": table_html})
+            
+    except Exception as e:
+        raise RecipeSiteTrafficException(e, sys)
     
 if __name__ == "__main__":
     app_run(
