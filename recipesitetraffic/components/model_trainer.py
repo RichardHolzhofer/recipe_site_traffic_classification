@@ -1,5 +1,6 @@
 import os
 import sys
+from dotenv import load_dotenv
 
 from recipesitetraffic.exception.exception import RecipeSiteTrafficException
 from recipesitetraffic.logging.logger import logging
@@ -19,9 +20,13 @@ from sklearn.ensemble import  GradientBoostingClassifier, RandomForestClassifier
 
 import pandas as pd
 import mlflow
-import dagshub
 
-dagshub.init(repo_owner='RichardHolzhofer', repo_name='recipe_site_traffic_classification', mlflow=True)
+load_dotenv()
+os.environ["MLFLOW_TRACKING_USERNAME"] = os.getenv("MLFLOW_TRACKING_USERNAME")
+os.environ["MLFLOW_TRACKING_PASSWORD"] = os.getenv("MLFLOW_TRACKING_PASSWORD")
+os.environ["MLFLOW_TRACKING_URI"] = os.getenv("MLFLOW_TRACKING_URI")
+
+mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI"))
 
 mlflow.set_experiment('Recipe Site Traffic')
 
