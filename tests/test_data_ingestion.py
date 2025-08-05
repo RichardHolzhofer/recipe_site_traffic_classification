@@ -92,6 +92,7 @@ def test_export_data_to_feature_store_basic(sample_config, sample_dataframe):
     assert os.path.exists(sample_config.feature_store_file_path)
     assert isinstance(df_returned, pd.DataFrame)
     
+    
 def test_split_data_into_train_and_test_basic(sample_config, sample_dataframe):
     ingestion = DataIngestion(sample_config)
 
@@ -101,6 +102,7 @@ def test_split_data_into_train_and_test_basic(sample_config, sample_dataframe):
     # Check if train and test files exist
     assert os.path.exists(sample_config.training_file_path)
     assert os.path.exists(sample_config.testing_file_path)
+ 
     
 def test_initiate_data_ingestion_basic(sample_config, sample_dataframe):
     ingestion = DataIngestion(sample_config)
