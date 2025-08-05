@@ -18,7 +18,7 @@ from datetime import datetime
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, File, UploadFile, Request
-from fastapi.responses import Response
+from fastapi.responses import Response, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
 from uvicorn import run as app_run
@@ -37,6 +37,7 @@ collection = database[DATA_INGESTION_COLLECTION_NAME]
 app = FastAPI()
 origins = ["*"]
 templates = Jinja2Templates(directory="./templates")
+last_prediction_table_html = ""
 
 app.add_middleware(
     CORSMiddleware,
@@ -46,9 +47,9 @@ app.add_middleware(
     allow_headers=origins
 )
 
-@app.get("/", tags=["authentication"])
-async def index():
-    return RedirectResponse(url="/docs")
+#@app.get("/", tags=["authentication"])
+#async def index():
+#    return RedirectResponse(url="/docs")
 
 
 @app.get("/train")
@@ -61,6 +62,17 @@ async def train_route():
     
     except Exception as e:
         raise RecipeSiteTrafficException(e, sys)
+    
+    
+@app.get("/", response_class=HTMLResponse)
+def home(request: Request):
+    return templates.TemplateResponse("upload_form.html", {"request": request})
+
+@app.get("/predict", response_class=HTMLResponse)
+def get_prediction(request: Request):
+    if not last_prediction_table_html:
+        return HTMLResponse("<h3>No prediction data available. Please upload first.</h3>")
+    return templates.TemplateResponse("table.html", {"request": request, "table": last_prediction_table_html})
     
 @app.post("/predict")
 async def predict_route(request: Request, file: UploadFile=File(...)):
@@ -78,9 +90,11 @@ async def predict_route(request: Request, file: UploadFile=File(...)):
         
         os.makedirs("predicted_data", exist_ok=True)
         cleaned_df.to_csv(f"predicted_data/predictions_{datetime.now().strftime('%d-%m-%Y-%H-%M-%S')}.csv", index=False)
-        table_html = cleaned_df.to_html(classes='table table-striped')
         
-        return templates.TemplateResponse("table.html", {"request": request, "table": table_html})
+        global last_prediction_table_html
+        last_prediction_table_html = cleaned_df.to_html(classes='table table-striped', index=False, justify="right")
+        
+        return templates.TemplateResponse("table.html", {"request": request, "table": last_prediction_table_html})
             
     except Exception as e:
         raise RecipeSiteTrafficException(e, sys)
@@ -91,3 +105,4 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=8000
         )
+    
