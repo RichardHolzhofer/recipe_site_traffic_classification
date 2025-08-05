@@ -119,10 +119,11 @@ jobs:
             echo "Error: AWS_ECR_LOGIN_URI is empty. Check your secrets."
             exit 1
           fi
+
           if [ -z "$ECR_REPOSITORY_NAME" ]; then
             echo "Error: ECR_REPOSITORY_NAME is empty. Check your secrets."
             exit 1
-          Ffi
+          fi
 
           # Construct the full image URI for debugging
           FULL_IMAGE_URI="$AWS_ECR_LOGIN_URI/$ECR_REPOSITORY_NAME:latest"
