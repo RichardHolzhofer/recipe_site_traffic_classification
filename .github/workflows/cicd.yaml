@@ -28,6 +28,7 @@ jobs:
 
       - name: Lint with Ruff
         run: |
+          ruff check . --fix
           ruff check .
 
       - name: Run unit tests
