@@ -18,7 +18,7 @@ python-dotenv
 pymongo
 certifi
 boto3
-awscli
+awscli>=2.0.0
 great_expectations
 pyaml
 evidently
