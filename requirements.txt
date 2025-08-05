@@ -18,6 +18,7 @@ python-dotenv
 pymongo
 certifi
 boto3
+awscli
 great_expectations
 pyaml
 evidently
@@ -26,4 +27,5 @@ uvicorn
 python-multipart
 pytest
 pytest-mock
+ruff
 #-e .
