@@ -24,4 +24,6 @@ evidently
 fastapi
 uvicorn
 python-multipart
+pytest
+pytest-mock
 #-e .
