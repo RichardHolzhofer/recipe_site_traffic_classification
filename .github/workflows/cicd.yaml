@@ -70,6 +70,7 @@ jobs:
             docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
             docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
             echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
   continuous_deployment:
     name: Continuous Deployment
     needs: build-and-push-ecr-image
@@ -79,6 +80,7 @@ jobs:
       CONTAINER_NAME: recipe-site-traffic-classification
       ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY_NAME }}
       AWS_ECR_LOGIN_URI: ${{ secrets.AWS_ECR_LOGIN_URI }}
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -96,17 +98,42 @@ jobs:
 
       - name: Pull latest image
         run: |
-          docker pull $AWS_ECR_LOGIN_URI/$ECR_REPOSITORY_NAME:latest
+          docker pull "$AWS_ECR_LOGIN_URI/$ECR_REPOSITORY_NAME:latest"
 
       - name: Stop and remove container if running
         run: |
           if docker ps -a --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
             echo "Stopping and removing container $CONTAINER_NAME"
-            docker stop $CONTAINER_NAME
-            docker rm -fv $CONTAINER_NAME
+            docker stop "$CONTAINER_NAME"
+            docker rm -fv "$CONTAINER_NAME"
           else
             echo "No existing container named $CONTAINER_NAME"
           fi
 
       - name: Run Docker Image to serve users
-        run: docker run -d -p 8000:8000 --ipc="host" --name=$CONTAINER_NAME -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} -e AWS_REGION=${{ secrets.AWS_REGION }} -e MLFLOW_TRACKING_URI=${{ secrets.MLFLOW_TRACKING_URI }} -e MLFLOW_TRACKING_USERNAME=${{ secrets.MLFLOW_TRACKING_USERNAME }} -e MLFLOW_TRACKING_PASSWORD=${{ secrets.MLFLOW_TRACKING_PASSWORD }} -e MONGO_DB_URL=${{ secrets.MONGO_DB_URL }} $AWS_ECR_LOGIN_URI/$ECR_REPOSITORY_NAME:latest
+        run: |
+          set -x # Enable shell debugging - prints commands before execution
+
+          # Validate that critical variables are not empty
+          if [ -z "$AWS_ECR_LOGIN_URI" ]; then
+            echo "Error: AWS_ECR_LOGIN_URI is empty. Check your secrets."
+            exit 1
+          fi
+          if [ -z "$ECR_REPOSITORY_NAME" ]; then
+            echo "Error: ECR_REPOSITORY_NAME is empty. Check your secrets."
+            exit 1
+          Ffi
+
+          # Construct the full image URI for debugging
+          FULL_IMAGE_URI="$AWS_ECR_LOGIN_URI/$ECR_REPOSITORY_NAME:latest"
+          echo "Attempting to run image: $FULL_IMAGE_URI"
+
+          docker run -d -p 8000:8000 --ipc="host" --name="$CONTAINER_NAME" \
+          -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
+          -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+          -e AWS_REGION="${{ secrets.AWS_REGION }}" \
+          -e MLFLOW_TRACKING_URI="${{ secrets.MLFLOW_TRACKING_URI }}" \
+          -e MLFLOW_TRACKING_USERNAME="${{ secrets.MLFLOW_TRACKING_USERNAME }}" \
+          -e MLFLOW_TRACKING_PASSWORD="${{ secrets.MLFLOW_TRACKING_PASSWORD }}" \
+          -e MONGO_DB_URL="${{ secrets.MONGO_DB_URL }}" \
+          "$FULL_IMAGE_URI" # Use the explicitly quoted full URI
