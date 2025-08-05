@@ -164,7 +164,7 @@ class DataValidation:
                 drift_result=drift_result
                 )
             
-            if status == True:
+            if status:
                 logging.info("Validation has been completed, schema is OK, no data drift detected")
             else:
                 logging.warning("Validation has been completed, schema and/or data drift detected")

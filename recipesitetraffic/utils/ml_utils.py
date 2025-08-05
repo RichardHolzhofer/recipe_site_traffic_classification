@@ -55,22 +55,18 @@ def hyperparameter_tuning(X_train_basic, y_train_basic, X_train_upsampled, y_tra
         grid.fit(X_train_upsampled, y_train_upsampled)
         
         logging.info("Inferencing for test data")
-        y_train_pred = grid.best_estimator_.predict(X_train_upsampled)
         y_test_pred = grid.best_estimator_.predict(X_test)
         
-        logging.info("Inferencing for test data")
-        #train_metrics = get_scores(y_train_upsampled, y_train_pred)
-        #test_metrics = get_scores(y_test, y_test_pred)
+        
     
     else:
         grid = GridSearchCV(model, param, cv=skf, n_jobs=-1, scoring=fbeta_scorer)
         grid.fit(X_train_basic, y_train_basic)
         
         logging.info("Inferencing for test data")
-        y_train_pred = grid.best_estimator_.predict(X_train_basic)
         y_test_pred = grid.best_estimator_.predict(X_test)
 
-        #train_metrics = get_scores(y_train_basic, y_train_pred)
+        
     test_metrics = get_scores(y_test, y_test_pred)
 
     scores = {
