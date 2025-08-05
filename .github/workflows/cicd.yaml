@@ -70,3 +70,48 @@ jobs:
             docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
             docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
             echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+  continuous_deployment:
+    name: Continuous Deployment
+    needs: build-and-push-ecr-image
+    runs-on: self-hosted
+    
+    env:
+      CONTAINER_NAME: recipe-site-traffic-classification
+      ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY_NAME }}
+      AWS_ECR_LOGIN_URI: ${{ secrets.AWS_ECR_LOGIN_URI }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Pull latest image
+        run: |
+          docker pull $AWS_ECR_LOGIN_URI/$ECR_REPOSITORY_NAME:latest
+
+      - name: Stop and remove container if running
+        run: |
+          if docker ps -a --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
+            echo "Stopping and removing container $CONTAINER_NAME"
+            docker stop $CONTAINER_NAME
+            docker rm -fv $CONTAINER_NAME
+          else
+            echo "No existing container named $CONTAINER_NAME"
+          fi
+
+      - name: Run Docker Image to serve users
+        run: |
+          docker run -d -p 8000:8000 --ipc="host" --name=$CONTAINER_NAME \
+          -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+          -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+          -e AWS_REGION=${{ secrets.AWS_REGION }} \
+          $AWS_ECR_LOGIN_URI/$ECR_REPOSITORY_NAME:latest
