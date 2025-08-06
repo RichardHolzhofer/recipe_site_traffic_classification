@@ -27,4 +27,5 @@ python-multipart
 pytest
 pytest-mock
 ruff
+streamlit
 #-e .
