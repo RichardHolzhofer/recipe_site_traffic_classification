@@ -7,7 +7,7 @@ The aim of this project is to support a company by developing a binary classific
 
 ## Project Status and Results
 
-The project successfully developed a classification model that predicts high-traffic recipes with a **[your model's accuracy, e.g., 85%]** accuracy. The solution meets the marketing department's requirement of a minimum 80% accuracy and provides a valuable tool for their content strategy.
+The project successfully developed a classification model that predicts high-traffic recipes with a precision of ~85 %. The solution meets the marketing department's requirement of a minimum 80% accuracy and provides a valuable tool for their content strategy.
 
 **Key Findings:**
 * **Recipe Categories are Key Predictors:** The type of recipe is a strong indicator of traffic. Some categories are far more likely to generate high traffic than others.
@@ -15,50 +15,21 @@ The project successfully developed a classification model that predicts high-tra
 * **Categories to Avoid:** The marketing team should be cautious when posting recipes from the **Beverages, Breakfast**, or **Chicken** categories, as they are less likely to result in high traffic.
 * **Nutritional Information:** The model did not find a strong correlation between a recipe's nutritional content (calories, carbohydrates, etc.) and its traffic performance. Other factors, like the recipe category, were more significant.predictors of traffic."
 
-The final model is deployed as a [mention where it's deployed, e.g., Streamlit application, API endpoint] which can be used by the marketing team to quickly classify new recipes.
+The final model is currently deployed on the following url: https://recipesitetrafficclassification-2ixkfkfnw9lzyescvtpnxv.streamlit.app/ where single and batch predicitons are also available.
 
-## Installation
+## Developement and usage
 
-To install my project, follow these steps:
-
-1.  Clone the repository:
-    ```bash
-    git clone [https://github.com/your-username/my-awesome-project.git](https://github.com/your-username/my-awesome-project.git)
-    ```
-
-2.  Navigate to the project directory:
-    ```bash
-    cd my-awesome-project
-    ```
-
-3.  Install dependencies:
-    ```bash
-    npm install
-    ```
-    or
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-## Usage
-
-Here's how to use My Awesome Project:
-
-### Command Line Interface
-
+The ETL pipeline can be triggered by the following command after setting up the environmental variables:
 ```bash
-python my-awesome-project.py --input data.txt --output results.csv
+python etl_pipeline.py
 
-## Contributing
+This extracts data from AWS S3, converts the csv to json format and uploads it to Mongo DB.
 
-We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
+The training pipeline consists of 4 parts:
+* Data ingestion
+* Data validation
+* Data transformation
+* Model training
 
-1.  Fork the repository.
-2.  Create a new branch: `git checkout -b feature/my-new-feature`
-3.  Make your changes and commit them: `git commit -m 'Add my new feature'`
-4.  Push to the branch: `git push origin feature/my-new-feature`
-5.  Open a pull request.
 
-## License
 
-This project is licensed under the [MIT License](LICENSE).
