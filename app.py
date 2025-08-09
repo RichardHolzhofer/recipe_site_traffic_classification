@@ -6,9 +6,8 @@ from recipesitetraffic.logging.logger import logging
 from recipesitetraffic.pipeline.training_pipeline import TrainingPipeline
 from recipesitetraffic.utils.main_utils import read_object
 from recipesitetraffic.constants.constants import DATA_INGESTION_DATABASE_NAME, DATA_INGESTION_COLLECTION_NAME
-from recipesitetraffic.utils.preprocessor import clean_data
 from recipesitetraffic.constants.constants import FINAL_MODEL_FILE_PATH
-from recipesitetraffic.utils.estimator import RecipeSiteTrafficBasicModel, RecipeSiteTrafficUpsamplerModel
+from recipesitetraffic.utils.estimator import RecipeSiteTrafficModel
 
 import certifi
 from dotenv import load_dotenv
@@ -78,21 +77,22 @@ def get_prediction(request: Request):
 async def predict_route(request: Request, file: UploadFile=File(...)):
     try:
         df = pd.read_csv(file.file)
-        cleaned_df = clean_data(df)
-        
         model = read_object(FINAL_MODEL_FILE_PATH)
         
-        y_pred = model.predict(cleaned_df)
+        pred_df = model.transform(df)
+        y_pred = model.predict(df)
         
-        cleaned_df['predicted_traffic'] = y_pred
-        cleaned_df['predicted_traffic'] = cleaned_df['predicted_traffic'].map(lambda x: 'High' if x == 1 else 'Low')
-        print(cleaned_df['predicted_traffic'])
+        if not isinstance(y_pred, pd.Series):
+                y_pred = pd.Series(y_pred)
+        
+        pred_df['predicted_traffic'] = y_pred.map({1: 'High', 0: 'Low'})
+        print(pred_df['predicted_traffic'])
         
         os.makedirs("predicted_data", exist_ok=True)
-        cleaned_df.to_csv(f"predicted_data/predictions_{datetime.now().strftime('%d-%m-%Y-%H-%M-%S')}.csv", index=False)
+        pred_df.to_csv(f"predicted_data/predictions_{datetime.now().strftime('%d-%m-%Y-%H-%M-%S')}.csv", index=False)
         
         global last_prediction_table_html
-        last_prediction_table_html = cleaned_df.to_html(classes='table table-striped', index=False, justify="right")
+        last_prediction_table_html = pred_df.to_html(classes='table table-striped', index=False, justify="right")
         
         return templates.TemplateResponse("table.html", {"request": request, "table": last_prediction_table_html})
             

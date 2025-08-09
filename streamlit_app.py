@@ -7,8 +7,9 @@ from recipesitetraffic.logging.logger import logging
 
 from recipesitetraffic.utils.main_utils import read_object
 from recipesitetraffic.utils.preprocessor import clean_data
+from recipesitetraffic.constants.constants import FINAL_MODEL_FILE_PATH, TARGET_COLUMN
 
-from recipesitetraffic.constants.constants import FINAL_MODEL_FILE_PATH, TRAINING_PIPELINE_ARTIFACT_BUCKET_NAME, TARGET_COLUMN
+from recipesitetraffic.utils.estimator import RecipeSiteTrafficModel
 
 from datetime import datetime
 import boto3
@@ -72,43 +73,6 @@ def load_best_model_with_preprocessor():
 
 
 
-def upload_csv():
-    uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
-
-    if uploaded_file is not None:
-        try:
-            
-            df = pd.read_csv(uploaded_file)
-            st.write("Original Data Preview:")
-            st.dataframe(df.head())
-
-            
-            cleaned_df = clean_data(df.copy())
-
-           
-            with st.spinner("Predicting traffic..."):
-                y_pred = model.predict(cleaned_df)
-                
-                if not isinstance(y_pred, pd.Series):
-                    y_pred = pd.Series(y_pred)
-                
-                cleaned_df['predicted_traffic'] = y_pred.map({1: 'High', 0: 'Low'})
-            
-            st.success("Prediction complete!")
-            st.write("Predicted Results:")
-            st.dataframe(cleaned_df)
-
-            st.download_button(
-                label="Download Predictions as CSV",
-                data=cleaned_df.to_csv(index=False).encode('utf-8'),
-                file_name=f"predictions_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
-                mime="text/csv",
-            )
-        
-        except Exception as e:
-            raise RecipeSiteTrafficException(e, sys)
-
-
 def slider_and_selectbox_setup(df):
     feature_dict = {}
     for col in df.columns:
@@ -121,11 +85,6 @@ def slider_and_selectbox_setup(df):
     return feature_dict
         
     
-    
-    
-#############################################################################
-
-
 
 
 raw_df = get_data_from_s3(bucket_name=BUCKET, key_id=KEY_ID)
@@ -152,21 +111,21 @@ if prediction_mode == "Batch Prediction (CSV Upload)":
         st.dataframe(df.head())
             
         with st.spinner("Predicting traffic..."):
-            clean_df = clean_data(df)
-            y_pred = model.predict(clean_df)
+            pred_df = model.transform(df)
+            y_pred = model.predict(df)
             
             if not isinstance(y_pred, pd.Series):
                 y_pred = pd.Series(y_pred)
             
-            clean_df['predicted_traffic'] = y_pred.map({1: 'High', 0: 'Low'})
+            pred_df['predicted_traffic'] = y_pred.map({1: 'High', 0: 'Low'})
         
         st.success("Prediction complete!")
-        st.write("Predicted Results:")
-        st.dataframe(clean_df)
+        st.write("Predicted Results Preview:")
+        st.dataframe(pred_df.head())
 
         st.download_button(
             label="Download Predictions as CSV",
-            data=clean_df.to_csv(index=False).encode('utf-8'),
+            data=df.to_csv(index=False).encode('utf-8'),
             file_name=f"predictions_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
             mime="text/csv",
         )
@@ -181,7 +140,7 @@ elif prediction_mode == "Single Instance Prediction":
                 f"Select {feature}",
                 min_value=config['min'],
                 max_value=config['max'],
-                value=(config['min'] + config['max']) / 2, # Default to middle
+                value=(config['min'] + config['max']) / 2,
                 key=f"slider_{feature}"
             )
         elif config['type'] == 'categorical':
