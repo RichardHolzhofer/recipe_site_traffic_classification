@@ -28,4 +28,4 @@ pytest
 pytest-mock
 ruff
 streamlit
-#-e .
+-e .

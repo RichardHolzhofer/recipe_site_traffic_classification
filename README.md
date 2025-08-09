@@ -65,10 +65,18 @@ The Delivery part contains pulling our image from AWS ECR and building and runni
 
 ├── data/
 │   ├── cleaned/
+│       └── cleaned_data.parquet.dvc
 │   └── raw_s3/
-├── notebooks/
+│       └── raw_data.csv.dvc
 ├── data_schema
 │   ├── schema.yaml
+├── notebooks/
+│   ├── models/
+│       └── best_model.joblib.dvc
+│   ├── 1_EDA.ipynb
+│   └── 2_Model_Training.ipynb
+
+
 
 ├── recipesitetraffic/
 │   ├── __init__.py
@@ -117,6 +125,8 @@ The Delivery part contains pulling our image from AWS ECR and building and runni
 └── .gitignore
 
 
-For easier usage the final model with the preprocessor is committed to GitHub and is available under final_model/final_model_with_preprocessor.joblib
+For easier usage the final model with the preprocessor is committed to GitHub and is available under final_model/final_model_with_preprocessor.joblib for inferencing.
+
+
 
 
