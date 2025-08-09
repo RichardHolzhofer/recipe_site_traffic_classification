@@ -48,12 +48,11 @@ Data transformation related constants start with DATA_TRANSFORMATION var name
 
 DATA_TRANSFORMATION_DIR_NAME: str = "data_transformation"
 DATA_TRANSFORMATION_PREPROCESSED_DATA_DIR: str = "preprocessed_data"
-DATA_TRANSFORMATION_PREPROCESSED_TRAIN_BASIC_FILE_NAME: str = "preprocessed_train_basic.npy"
-DATA_TRANSFORMATION_PREPROCESSED_TRAIN_UPSAMPLED_FILE_NAME: str = "preprocessed_train_upsampled.npy"
-DATA_TRANSFORMATION_PREPROCESSED_TEST_FILE_NAME: str = "preprocessed_test.npy"
+DATA_TRANSFORMATION_PREPROCESSED_TRAIN_FILE_NAME: str = "preprocessed_train.csv"
+DATA_TRANSFORMATION_PREPROCESSED_TEST_FILE_NAME: str = "preprocessed_test.csv"
 DATA_TRANSFORMATION_PREPROCESSOR_OBJECT_DIR: str = "preprocessor_object"
-DATA_TRANSFORMATION_PREPROCESSOR_OBJECT_BASIC_FILE_NAME: str = "basic_preprocessor.joblib"
-DATA_TRANSFORMATION_PREPROCESSOR_OBJECT_UPSAMPLER_FILE_NAME: str = "upsampler_preprocessor.joblib"
+DATA_TRANSFORMATION_PREPROCESSOR_CLEANER_OBJECT_FILE_NAME: str = "cleaner_preprocessor.joblib"
+DATA_TRANSFORMATION_PREPROCESSOR_TRANSFORMER_OBJECT_FILE_NAME: str = "transformer_preprocessor.joblib"
 
 
 """
