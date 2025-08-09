@@ -5,8 +5,5 @@ notebooks/catboost_info
 logs/
 artifacts/
 mlruns/
-helper.ipynb
-helper2.ipynb
-evidently.ipynb
 predicted_data/
 .streamlit/secrets.toml

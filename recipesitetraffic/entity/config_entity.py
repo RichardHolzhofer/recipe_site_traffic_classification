@@ -91,13 +91,9 @@ class DataTransformationConfig:
             self.data_transformation_dir,
             constants.DATA_TRANSFORMATION_PREPROCESSED_DATA_DIR,
         )
-        self.preprocessed_train_basic_file_path = os.path.join(
+        self.preprocessed_train_file_path = os.path.join(
             self.preprocessed_data_dir,
-            constants.DATA_TRANSFORMATION_PREPROCESSED_TRAIN_BASIC_FILE_NAME
-        )
-        self.preprocessed_train_upsampled_file_path = os.path.join(
-            self.preprocessed_data_dir,
-            constants.DATA_TRANSFORMATION_PREPROCESSED_TRAIN_UPSAMPLED_FILE_NAME
+            constants.DATA_TRANSFORMATION_PREPROCESSED_TRAIN_FILE_NAME
         )
         self.preprocessed_test_file_path = os.path.join(
             self.preprocessed_data_dir,
@@ -107,13 +103,13 @@ class DataTransformationConfig:
             self.data_transformation_dir,
             constants.DATA_TRANSFORMATION_PREPROCESSOR_OBJECT_DIR
         )
-        self.preprocessor_object_basic_file_path = os.path.join(
+        self.preprocessor_cleaner_object_file_path = os.path.join(
             self.preprocessor_object_dir,
-            constants.DATA_TRANSFORMATION_PREPROCESSOR_OBJECT_BASIC_FILE_NAME
+            constants.DATA_TRANSFORMATION_PREPROCESSOR_CLEANER_OBJECT_FILE_NAME
         )
-        self.preprocessor_object_upsampler_file_path = os.path.join(
+        self.preprocessor_transformer_object_file_path = os.path.join(
             self.preprocessor_object_dir,
-            constants.DATA_TRANSFORMATION_PREPROCESSOR_OBJECT_UPSAMPLER_FILE_NAME
+            constants.DATA_TRANSFORMATION_PREPROCESSOR_TRANSFORMER_OBJECT_FILE_NAME
         )
         
 class ModelTrainerConfig:

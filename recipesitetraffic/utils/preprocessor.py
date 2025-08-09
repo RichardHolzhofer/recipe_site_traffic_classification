@@ -15,15 +15,15 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
         df = df.copy()
 
         if 'recipe' in df.columns:
-            df.drop('recipe', axis=1, inplace=True)
+            df = df.drop('recipe', axis=1)
 
         df.loc[df['category'] == 'Chicken Breast', 'category'] = 'Chicken'
 
         if df['servings'].dtype == object:
             df['servings'] = df['servings'].str.replace(' as a snack', '', regex=False)
 
-        df.drop(df[df.isna().sum(axis=1) >= 4].index, inplace=True)
-        df.reset_index(drop=True, inplace=True)
+        df = df.drop(df[df.isna().sum(axis=1) >= 4].index)
+        df = df.reset_index(drop=True)
 
         logging.info("Data is cleaned for prediction")
         return df
