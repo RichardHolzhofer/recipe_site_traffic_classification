@@ -7,3 +7,4 @@ artifacts/
 mlruns/
 predicted_data/
 .streamlit/secrets.toml
+.ruff_cache/
